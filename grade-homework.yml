@@ -1,0 +1,39 @@
+- hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: Ec2 facts for Ansible Tower Env
+    ec2_instance_facts:
+      region: "{{ REGION_NAME }}"
+      filters:
+        "tag:Project": "ans-tower-lab-{{tower_GUID}}"
+        "tag:AnsibleGroup": bastions
+    register: tower_bastion
+  - name: In memory Inventory
+    add_host:
+      name: "{{ item.public_ip_address }}"
+      group: bastion
+    loop: "{{ tower_bastion.instances }}"
+
+- hosts: bastion
+  gather_facts: false
+  become: true
+  tasks:
+  - name: Clone repo on bastion
+    git:
+      repo: "{{ GITHUB_REPO }}"
+      dest: /root/ansible_homework
+  - name: Setup workstation
+    command: ansible-playbook site-setup-workstation.yml -e "osp_GUID={{osp_GUID}}" -u "{{opentlc_login}}" --private-key=/root/.ssh/mykey.pem
+    args:
+      chdir: /root/ansible_homework/
+  - name: Setup Ansible Tower
+    command: |
+      ansible-playbook site-config-tower.yml -e tower_GUID={{tower_GUID}} -e osp_GUID={{osp_GUID}} -e opentlc_login={{opentlc_login}} -e path_to_opentlc_key=/root/.ssh/mykey.pem -e param_repo_base={{jq_repo_base}} -e opentlc_password={{opentlc_password}} -e REGION_NAME={{REGION_NAME}} -e EMAIL={{EMAIL}}
+    args:
+      chdir: /root/ansible_homework/
+  - name: Launch workflow
+    command: |
+      tower-cli workflow_job launch --workflow-job-template cicd_workflow 
+
+- include_tasks: grade-qa.yml
+- include_tasks: grade-prod.yml
