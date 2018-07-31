@@ -44,7 +44,7 @@
 
   - name: Setup Ansible Tower
     command: |
-      ansible-playbook site-config-tower.yml -e tower_GUID={{tower_GUID}} -e osp_GUID={{osp_GUID}} -e opentlc_login={{opentlc_login}} -e path_to_opentlc_key=/root/.ssh/mykey.pem -e param_repo_base={{jq_repo_base}} -e opentlc_password={{opentlc_password}} -e REGION_NAME={{REGION_NAME}} -e EMAIL={{EMAIL}}
+      ansible-playbook site-config-tower.yml -e tower_GUID={{tower_GUID}} -e osp_GUID={{osp_GUID}} -e opentlc_login={{opentlc_login}} -e path_to_opentlc_key=/root/.ssh/mykey.pem -e param_repo_base={{jq_repo_base}} -e opentlc_password={{opentlc_password}} -e REGION_NAME={{REGION_NAME}} -e EMAIL={{EMAIL}} -e github_repo={{GITHUB_REPO}}
     args:
       chdir: /root/ansible_homework/
 
