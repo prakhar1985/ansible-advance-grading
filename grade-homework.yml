@@ -18,22 +18,42 @@
   gather_facts: false
   become: true
   tasks:
+  - name: Copy Opentlc Private Key
+    copy:
+      src: "{{ opentlc_key }}"
+      dest: /root/.ssh/mykey.pem
+      mode: 0400
+      owner: root
+      group: root
+      
   - name: Clone repo on bastion
     git:
       repo: "{{ GITHUB_REPO }}"
       dest: /root/ansible_homework
+
+  - name: Install Isolated node
+    command: |
+      ansible-playbook site-install-isolated-node.yml -e "osp_GUID={{osp_GUID}}"
+    args:
+      chdir: /root/ansible_homework/
+
   - name: Setup workstation
     command: ansible-playbook site-setup-workstation.yml -e "osp_GUID={{osp_GUID}}" -u "{{opentlc_login}}" --private-key=/root/.ssh/mykey.pem
     args:
       chdir: /root/ansible_homework/
+
   - name: Setup Ansible Tower
     command: |
       ansible-playbook site-config-tower.yml -e tower_GUID={{tower_GUID}} -e osp_GUID={{osp_GUID}} -e opentlc_login={{opentlc_login}} -e path_to_opentlc_key=/root/.ssh/mykey.pem -e param_repo_base={{jq_repo_base}} -e opentlc_password={{opentlc_password}} -e REGION_NAME={{REGION_NAME}} -e EMAIL={{EMAIL}}
     args:
       chdir: /root/ansible_homework/
+
   - name: Launch workflow
     command: |
-      tower-cli workflow_job launch --workflow-job-template cicd_workflow 
+      tower-cli workflow_job launch --workflow-job-template cicd_workflow --wait 
 
-- include_tasks: grade-qa.yml
-- include_tasks: grade-prod.yml
+- hosts: localhost
+  gather_facts: false
+  tasks:
+  - include_tasks: grade-qa.yml
+  - include_tasks: grade-prod.yml

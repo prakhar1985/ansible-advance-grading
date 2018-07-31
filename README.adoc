@@ -20,5 +20,5 @@ JQ_REPO_BASE=http://www.opentlc.com/download/ansible_bootcamp
 REGION=<enter region name example us-east-1>
 RH_MAIL_ID=<your mail id for dynamic inventory tag>
 
-# ansible-playbook grade-homework.yml -e "tower_GUID=${TOWER_GUID}" -e "REGION_NAME=${REGION}" -e "GITHUB_REPO=${GITHUB_REPO}" -u ${OPENTLC_LOGIN} --private-key=${OPENTLC_KEY} -e osp_GUID=${OSP_GUID} -e "opentlc_login=${OPENTLC_LOGIN}" -e jq_repo_base=${JQ_REPO_BASE} -e opentlc_password=${OPENTLC_PASSWORD} -e EMAIL=${RH_MAIL_ID}
+# ansible-playbook grade-homework.yml -e "tower_GUID=${TOWER_GUID}" -e "REGION_NAME=${REGION}" -e "GITHUB_REPO=${GITHUB_REPO}" -u ${OPENTLC_LOGIN} --private-key=${OPENTLC_KEY} -e osp_GUID=${OSP_GUID} -e "opentlc_login=${OPENTLC_LOGIN}" -e jq_repo_base=${JQ_REPO_BASE} -e opentlc_password=${OPENTLC_PASSWORD} -e EMAIL=${RH_MAIL_ID} -e opentlc_key=${OPENTLC_KEY}
 ----
